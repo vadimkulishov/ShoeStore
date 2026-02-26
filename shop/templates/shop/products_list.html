@@ -1,0 +1,133 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Товары - ООО Обувь{% endblock %}
+
+{% block content %}
+<h1>Каталог товаров</h1>
+
+{% if has_filters %}
+<div class="filters">
+    <form method="get" id="filterForm">
+        <div class="filter-row">
+            <div class="form-group">
+                <label for="search">Поиск:</label>
+                <input type="text" id="search" name="search" class="form-control" 
+                       placeholder="Поиск по названию, артикулу, описанию..."
+                       value="{{ search_query }}" onchange="document.getElementById('filterForm').submit();">
+            </div>
+            
+            <div class="form-group">
+                <label for="supplier">Поставщик:</label>
+                <select id="supplier" name="supplier" class="form-control" 
+                        onchange="document.getElementById('filterForm').submit();">
+                    <option value="">Все поставщики</option>
+                    {% for supplier in suppliers %}
+                    <option value="{{ supplier.id }}" 
+                            {% if supplier.id|stringformat:"s" == selected_supplier %}selected{% endif %}>
+                        {{ supplier.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="sort_quantity">Сортировка по кол-ву:</label>
+                <select id="sort_quantity" name="sort_quantity" class="form-control"
+                        onchange="document.getElementById('filterForm').submit();">
+                    <option value="">По умолчанию</option>
+                    <option value="asc" {% if sort_quantity == 'asc' %}selected{% endif %}>По возрастанию</option>
+                    <option value="desc" {% if sort_quantity == 'desc' %}selected{% endif %}>По убыванию</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+{% if user.profile.role == 'admin' %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'shop:add_product' %}" class="btn btn-primary">+ Добавить товар</a>
+    <a href="{% url 'shop:dashboard' %}" class="btn btn-secondary">← Назад</a>
+</div>
+{% else %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'shop:dashboard' %}" class="btn btn-secondary">← Назад</a>
+</div>
+{% endif %}
+
+{% if products %}
+<table>
+    <thead>
+        <tr>
+            <th>Фото</th>
+            <th>Артикул</th>
+            <th>Наименование</th>
+            <th>Категория</th>
+            <th>Производитель</th>
+            <th>Поставщик</th>
+            <th>Цена</th>
+            <th>Кол-во</th>
+            <th>Скидка</th>
+            {% if user.profile.role == 'admin' %}
+            <th>Действия</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr class="{% if product.quantity == 0 %}empty-stock{% elif product.discount > 15 %}high-discount{% endif %}">
+            <td style="text-align: center;">
+                {% if product.photo %}
+                    <img src="{{ product.photo.url }}" alt="{{ product.name }}" style="max-width: 80px; max-height: 60px;">
+                {% else %}
+                    <div style="width: 80px; height: 60px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: #999; font-size: 12px;">Нет фото</span>
+                    </div>
+                {% endif %}
+            </td>
+            <td><strong>{{ product.article }}</strong></td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.category.name }}</td>
+            <td>{{ product.manufacturer.name }}</td>
+            <td>{{ product.supplier.name }}</td>
+            <td>
+                {% if product.discount > 0 %}
+                    <span class="price-original">{{ product.price }} ₽</span><br>
+                    <span class="price-final">{{ product.get_final_price }} ₽</span>
+                {% else %}
+                    {{ product.price }} ₽
+                {% endif %}
+            </td>
+            <td>
+                {% if product.quantity == 0 %}
+                    <span style="color: red; font-weight: bold;">Нет в наличии</span>
+                {% else %}
+                    {{ product.quantity }} {{ product.unit }}
+                {% endif %}
+            </td>
+            <td>
+                {% if product.discount > 0 %}
+                    <strong>{{ product.discount }}%</strong>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            {% if user.profile.role == 'admin' %}
+            <td>
+                <a href="{% url 'shop:edit_product' product.article %}" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Редактировать</a>
+                <a href="{% url 'shop:delete_product' product.article %}" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Удалить</a>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p style="margin-top: 20px; color: #666;">Всего товаров: <strong>{{ products|length }}</strong></p>
+{% else %}
+<div style="text-align: center; padding: 40px; color: #999;">
+    <p style="font-size: 16px;">По вашему запросу товаров не найдено</p>
+</div>
+{% endif %}
+
+{% endblock %}

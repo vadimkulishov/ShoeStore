@@ -1,0 +1,101 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}{% if is_edit %}Редактировать{% else %}Добавить{% endif %} товар - ООО Обувь{% endblock %}
+
+{% block content %}
+<h1>{% if is_edit %}Редактировать товар{% else %}Добавить новый товар{% endif %}</h1>
+
+<div style="max-width: 600px; margin: 20px 0;">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.article.id_for_label }}">Артикул:</label>
+            {% if is_edit %}
+                <input type="text" class="form-control" value="{{ form.article.value }}" disabled>
+                <input type="hidden" name="article" value="{{ form.article.value }}">
+            {% else %}
+                {{ form.article }}
+            {% endif %}
+            {% if form.article.errors %}
+                <span style="color: red;">{{ form.article.errors.0 }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Наименование:</label>
+            {{ form.name }}
+            {% if form.name.errors %}<span style="color: red;">{{ form.name.errors.0 }}</span>{% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.category.id_for_label }}">Категория:</label>
+            {{ form.category }}
+            {% if form.category.errors %}<span style="color: red;">{{ form.category.errors.0 }}</span>{% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Описание:</label>
+            {{ form.description }}
+            {% if form.description.errors %}<span style="color: red;">{{ form.description.errors.0 }}</span>{% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.manufacturer.id_for_label }}">Производитель:</label>
+            {{ form.manufacturer }}
+            {% if form.manufacturer.errors %}<span style="color: red;">{{ form.manufacturer.errors.0 }}</span>{% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.supplier.id_for_label }}">Поставщик:</label>
+            {{ form.supplier }}
+            {% if form.supplier.errors %}<span style="color: red;">{{ form.supplier.errors.0 }}</span>{% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.price.id_for_label }}">Цена:</label>
+            {{ form.price }}
+            {% if form.price.errors %}<span style="color: red;">{{ form.price.errors.0 }}</span>{% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.unit.id_for_label }}">Единица измерения:</label>
+            {{ form.unit }}
+            {% if form.unit.errors %}<span style="color: red;">{{ form.unit.errors.0 }}</span>{% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.quantity.id_for_label }}">Количество на складе:</label>
+            {{ form.quantity }}
+            {% if form.quantity.errors %}<span style="color: red;">{{ form.quantity.errors.0 }}</span>{% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.discount.id_for_label }}">Действующая скидка (%):</label>
+            {{ form.discount }}
+            {% if form.discount.errors %}<span style="color: red;">{{ form.discount.errors.0 }}</span>{% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.photo.id_for_label }}">Фото товара:</label>
+            {% if form.photo %}
+                {{ form.photo }}
+            {% endif %}
+            {% if product.photo %}
+                <div style="margin-top: 10px;">
+                    <p style="font-size: 12px; color: #666;">Текущее изображение:</p>
+                    <img src="{{ product.photo.url }}" style="max-width: 200px; max-height: 150px; border-radius: 4px;">
+                </div>
+            {% endif %}
+            {% if form.photo.errors %}<span style="color: red;">{{ form.photo.errors.0 }}</span>{% endif %}
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">
+                {% if is_edit %}Сохранить изменения{% else %}Добавить товар{% endif %}
+            </button>
+            <a href="{% url 'shop:products_list' %}" class="btn btn-secondary" style="flex: 1; text-decoration: none; padding: 10px;">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

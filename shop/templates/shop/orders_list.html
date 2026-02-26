@@ -1,0 +1,86 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Заказы - ООО Обувь{% endblock %}
+
+{% block content %}
+<h1>Список заказов</h1>
+
+{% if user.profile.role == 'admin' %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'shop:add_order' %}" class="btn btn-primary">+ Добавить заказ</a>
+    <a href="{% url 'shop:dashboard' %}" class="btn btn-secondary">← Назад</a>
+</div>
+{% else %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'shop:dashboard' %}" class="btn btn-secondary">← Назад</a>
+</div>
+{% endif %}
+
+{% if orders %}
+<table>
+    <thead>
+        <tr>
+            <th>№ Заказа</th>
+            <th>Дата заказа</th>
+            <th>Дата доставки</th>
+            <th>ФИО клиента</th>
+            <th>Пункт выдачи</th>
+            <th>Статус</th>
+            <th>Код получения</th>
+            {% if user.profile.role == 'admin' %}
+            <th>Действия</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td><strong>#{{ order.order_number }}</strong></td>
+            <td>{{ order.order_date|date:"d.m.Y H:i" }}</td>
+            <td>{{ order.delivery_date|date:"d.m.Y H:i" }}</td>
+            <td>{{ order.customer_name }}</td>
+            <td>
+                {% if order.delivery_point %}
+                    {{ order.delivery_point.address }}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td>
+                {% if order.status == 'pending' %}
+                    <span style="color: #FF6B6B; font-weight: bold;">В обработке</span>
+                {% elif order.status == 'completed' %}
+                    <span style="color: #51CF66; font-weight: bold;">Завершен</span>
+                {% elif order.status == 'cancelled' %}
+                    <span style="color: #868E96; font-weight: bold;">Отменен</span>
+                {% endif %}
+            </td>
+            <td><strong>{{ order.code }}</strong></td>
+            {% if user.profile.role == 'admin' %}
+            <td>
+                <a href="{% url 'shop:edit_order' order.id %}" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Редактировать</a>
+                <a href="{% url 'shop:delete_order' order.id %}" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Удалить</a>
+            </td>
+            {% endif %}
+        </tr>
+        <tr style="background-color: #f9f9f9;">
+            <td colspan="7">
+                <strong style="font-size: 12px;">Товары в заказе:</strong>
+                <ul style="margin-left: 20px; margin-top: 5px;">
+                    {% for item in order.items.all %}
+                    <li>{{ item.product.name }} ({{ item.product.article }}) x {{ item.quantity }} шт.</li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p style="margin-top: 20px; color: #666;">Всего заказов: <strong>{{ orders|length }}</strong></p>
+{% else %}
+<div style="text-align: center; padding: 40px; color: #999;">
+    <p style="font-size: 16px;">Заказов не найдено</p>
+</div>
+{% endif %}
+{% endblock %}

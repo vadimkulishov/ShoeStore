@@ -1,0 +1,23 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Удаление товара - ООО Обувь{% endblock %}
+
+{% block content %}
+<h1>Удаление товара</h1>
+
+<div style="max-width: 500px; background-color: #fff3cd; padding: 20px; border-radius: 8px; border: 2px solid #ffc107; margin: 20px 0;">
+    <h3 style="color: #856404; margin-bottom: 10px;">⚠️ Подтверждение удаления</h3>
+    <p style="color: #856404; margin-bottom: 15px;">
+        Вы уверены, что хотите удалить товар <strong>"{{ product.name }}"</strong> (Артикул: {{ product.article }})?
+    </p>
+    <p style="color: #856404; font-size: 14px;">Это действие невозможно отменить.</p>
+</div>
+
+<div style="display: flex; gap: 10px; margin-top: 20px;">
+    <form method="post" style="flex: 1;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" style="width: 100%; padding: 12px;">Да, удалить товар</button>
+    </form>
+    <a href="{% url 'shop:products_list' %}" class="btn btn-secondary" style="flex: 1; text-decoration: none; padding: 12px; text-align: center;">Отмена</a>
+</div>
+{% endblock %}

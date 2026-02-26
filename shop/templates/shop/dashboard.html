@@ -1,0 +1,39 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Главное меню - ООО Обувь{% endblock %}
+
+{% block content %}
+<h1>Добро пожаловать, {{ user.profile.full_name }}!</h1>
+
+<div style="margin-top: 40px; text-align: center;">
+    <h2 style="margin-bottom: 30px;">Выберите действие:</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+        <div style="border: 3px solid #7FFF00; padding: 30px; border-radius: 8px;">
+            <h3 style="margin-bottom: 15px; color: #7FFF00;">📦 Товары</h3>
+            <p style="margin-bottom: 20px; color: #666;">Просмотр каталога товаров</p>
+            <a href="{% url 'shop:products_list' %}" class="btn btn-primary" style="width: 100%; padding: 12px;">Открыть</a>
+        </div>
+        
+        {% if user.profile.role in 'manager|admin' %}
+        <div style="border: 3px solid #7FFF00; padding: 30px; border-radius: 8px;">
+            <h3 style="margin-bottom: 15px; color: #7FFF00;">📋 Заказы</h3>
+            <p style="margin-bottom: 20px; color: #666;">Просмотр и управление заказами</p>
+            <a href="{% url 'shop:orders_list' %}" class="btn btn-primary" style="width: 100%; padding: 12px;">Открыть</a>
+        </div>
+        {% endif %}
+        
+        {% if user.profile.role == 'admin' %}
+        <div style="border: 3px solid #7FFF00; padding: 30px; border-radius: 8px;">
+            <h3 style="margin-bottom: 15px; color: #7FFF00;">⚙️ Администрация</h3>
+            <p style="margin-bottom: 20px; color: #666;">Управление системой</p>
+            <a href="/admin/" class="btn btn-primary" style="width: 100%; padding: 12px;">Открыть</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div style="margin-top: 40px;">
+        <p style="color: #999; font-size: 14px;">Ваша роль: <strong>{{ user.profile.get_role_display }}</strong></p>
+    </div>
+</div>
+{% endblock %}
